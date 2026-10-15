@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StagePass Live — Boletería digital</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="marca">
+      <span class="logo">◆</span>
+      <div><h1>StagePass Live</h1><p>Event &amp; Concert Platform</p></div>
+    </div>
+    <nav class="pestanas">
+      <button class="pestana activa" data-vista="comprar">Comprar</button>
+      <button class="pestana" data-vista="validar">Validar boleto</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="vista-comprar" class="vista activa">
+      <h2 class="titulo-seccion">Cartelera</h2>
+      <div id="cartelera" class="cartelera"></div>
+
+      <div id="zonaCompra" class="zona-compra" hidden>
+        <section class="mapa">
+          <div class="mapa-cabecera">
+            <div>
+              <h2 id="tituloEvento"></h2>
+              <p id="detalleEvento" class="tenue"></p>
+            </div>
+            <ul class="leyenda">
+              <li><i class="punto disponible"></i>Disponible</li>
+              <li><i class="punto seleccionado"></i>Seleccionado</li>
+              <li><i class="punto bloqueado"></i>Bloqueado</li>
+              <li><i class="punto vendido"></i>Vendido</li>
+            </ul>
+          </div>
+          <div class="escenario">ESCENARIO</div>
+          <div id="mapaAsientos"></div>
+        </section>
+
+        <aside class="panel">
+          <h3>Tu compra</h3>
+          <label class="campo">
+            <span>Cliente</span>
+            <select id="selectCliente"></select>
+          </label>
+          <details id="nuevoCliente" class="nuevo-cliente">
+            <summary>Registrar cliente nuevo</summary>
+            <form id="formCliente" novalidate>
+              <input name="nombreCompleto" placeholder="Nombre completo" required>
+              <input name="correo" type="email" placeholder="Correo electrónico" required>
+              <input name="telefonoMovil" placeholder="Celular (+57…)" required>
+              <input name="nacionalidad" placeholder="Nacionalidad" required>
+              <button class="boton secundario">Registrar</button>
+            </form>
+          </details>
+
+          <fieldset class="medios">
+            <legend>Medio de pago</legend>
+            <label><input type="radio" name="medio" value="Wompi" checked> Wompi</label>
+            <label><input type="radio" name="medio" value="PayPal"> PayPal</label>
+            <label><input type="radio" name="medio" value="PSE"> PSE</label>
+          </fieldset>
+
+          <ul id="seleccion" class="seleccion"></ul>
+          <dl id="resumen" class="resumen"></dl>
+          <p class="nota">Tarifas por volumen: 1–2 boletas 10 % de tarifa · 3–5 boletas 8 % de tarifa y 5 % de descuento · más de 5: 5 % de tarifa y 10 % de descuento. Máximo 6 boletas por evento.</p>
+          <button id="btnComprar" class="boton" disabled>Iniciar compra</button>
+        </aside>
+      </div>
+    </section>
+
+    <section id="vista-validar" class="vista">
+      <div class="validador">
+        <h2 class="titulo-seccion">Control de acceso</h2>
+        <p class="tenue">Ingresa el código de redención: el sistema recalcula la firma HMAC-SHA256 con la clave del evento.</p>
+        <form id="formValidar" class="fila">
+          <input id="codigoValidar" placeholder="SPL-XXXX-XXXX-XXXX" required>
+          <button class="boton">Validar</button>
+        </form>
+        <div id="resultadoValidacion"></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="dialogoOrden" class="dialogo">
+    <div id="contenidoOrden"></div>
+  </dialog>
+
+  <div id="aviso" class="aviso" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

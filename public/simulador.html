@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador de pasarela — StagePass Live</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main style="max-width:560px;margin:3rem auto">
+    <div class="panel" style="position:static">
+      <p class="titulo-seccion" id="titulo">Pasarela simulada</p>
+      <h2 id="monto">—</h2>
+      <p class="tenue" id="detalle">Cargando orden…</p>
+      <div class="acciones">
+        <button class="boton" data-resultado="aprobado">Aprobar pago</button>
+        <button class="boton peligro" data-resultado="rechazado">Rechazar pago</button>
+      </div>
+      <pre id="salida" class="nota" style="white-space:pre-wrap"></pre>
+      <a class="boton secundario enlace" href="/">Volver a StagePass</a>
+    </div>
+  </main>
+  <script>
+    const p = new URLSearchParams(location.search);
+    const medio = p.get('medio'), ref = p.get('ref');
+    let orden = null;
+    document.getElementById('titulo').textContent = `${medio} · entorno de pruebas`;
+    fetch(`/api/ordenes/${encodeURIComponent(ref)}`).then((r) => r.json()).then((d) => {
+      orden = d.orden;
+      document.getElementById('monto').textContent =
+        new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(orden.montoTotal);
+      document.getElementById('detalle').textContent = `Orden ${orden.id} · ${orden.estado}`;
+    });
+    document.querySelectorAll('[data-resultado]').forEach((b) => b.addEventListener('click', async () => {
+      const r = await fetch('/api/simulador/notificar', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ medio, referencia: ref, monto: orden.montoTotal, resultado: b.dataset.resultado }),
+      });
+      const d = await r.json();
+      const w = d.respuestaWebhook;
+      document.getElementById('detalle').textContent = w?.cuerpo?.orden ? `Orden ${w.cuerpo.orden.id} · ${w.cuerpo.orden.estado}` : (d.error || w?.cuerpo?.error);
+      document.getElementById('salida').textContent = `Notificación enviada a ${d.enviado?.ruta}\nRespuesta del webhook: HTTP ${w?.estado}`;
+    }));
+  </script>
+</body>
+</html>
